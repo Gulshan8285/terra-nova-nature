@@ -1,0 +1,8 @@
+<resources>
+    <color name="primary_green">#245C4E</color>
+    <color name="dark_green">#17483C</color>
+    <color name="cream_bg">#FAF5F2</color>
+    <color name="soft_yellow">#E9E85B</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

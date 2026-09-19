@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="nm-bg-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#245C4E"/>
+      <stop offset="100%" stop-color="#17483C"/>
+    </linearGradient>
+    <linearGradient id="nm-sun-grad" x1="24" y1="6" x2="24" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E9E85B"/>
+      <stop offset="100%" stop-color="#D4D342"/>
+    </linearGradient>
+    <linearGradient id="nm-mtn-back" x1="16" y1="14" x2="28" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3A7D6B"/>
+      <stop offset="100%" stop-color="#1E5244"/>
+    </linearGradient>
+    <linearGradient id="nm-mtn-front" x1="12" y1="20" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2B6B5B"/>
+      <stop offset="100%" stop-color="#143E33"/>
+    </linearGradient>
+    <filter id="nm-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#17483C" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Circular background badge with smooth border -->
+  <rect width="48" height="48" rx="24" fill="url(#nm-bg-grad)" filter="url(#nm-shadow)"/>
+  <rect x="1" y="1" width="46" height="46" rx="23" stroke="#E9E85B" stroke-opacity="0.35" stroke-width="1.5"/>
+
+  <!-- Morning Golden Sun -->
+  <circle cx="28" cy="15" r="6" fill="url(#nm-sun-grad)"/>
+
+  <!-- Back Mountain -->
+  <path d="M19 14L33 34H11L19 14Z" fill="url(#nm-mtn-back)" opacity="0.9"/>
+  <!-- Back Mountain snow/ridge peak highlight -->
+  <path d="M19 14L22 19L19 21L17 19L19 14Z" fill="#FAF5F2" opacity="0.85"/>
+
+  <!-- Front Mountain with peaks -->
+  <path d="M29 18L41 36H19L29 18Z" fill="url(#nm-mtn-front)"/>
+  <path d="M29 18L32 24L29 26L26 23L29 18Z" fill="#FAF5F2" opacity="0.9"/>
+
+  <!-- Lush Pine Trees -->
+  <!-- Left Tree -->
+  <path d="M14 26L17 31H15.5L18 35H10L12.5 31H11L14 26Z" fill="#17483C"/>
+  <rect x="13.3" y="35" width="1.4" height="2" fill="#E9E85B" opacity="0.7"/>
+
+  <!-- Center Tree -->
+  <path d="M22 23L25.5 29H23.8L27 34H17L20.2 29H18.5L22 23Z" fill="#E9E85B" opacity="0.95"/>
+  <path d="M22 24.5L24.5 29.5H23.2L25.8 33.5H18.2L20.8 29.5H19.5L22 24.5Z" fill="#245C4E"/>
+
+  <!-- Organic Green Water / Meadow ripples at bottom -->
+  <path d="M6 38C12 36 18 39 24 37C30 35 36 38 42 36" stroke="#FAF5F2" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.8"/>
+  <path d="M10 41C16 39.5 22 42 28 40.5C34 39 38 41 40 40" stroke="#E9E85B" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.9"/>
+</svg>

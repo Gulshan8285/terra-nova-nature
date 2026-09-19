@@ -1,0 +1,331 @@
+/* ==========================================================
+   NATURE MOMENTS — MASTER APPLICATION CONTROLLER
+   Pure Instagram Reels format (9:16) with 100+ nature reels,
+   Web Audio ambient sound engine, and seamless navigation
+   ========================================================== */
+
+import { i18n } from './services/i18n.js';
+import { getReelsByCategory, getReelById } from './data/reels.js';
+import { CATEGORIES, getCategoryById } from './data/categories.js';
+import { VideoPlayer } from './components/video-player.js';
+import { ReelsFeed } from './components/reels-feed.js';
+import { ReelsGrid } from './components/reels-grid.js';
+import { SaveScreen } from './components/save-screen.js';
+import { SideDrawer } from './components/side-drawer.js';
+import { ModalsManager } from './components/modals.js';
+import { soundEngine } from './services/sound-engine.js';
+
+class NatureMomentsApp {
+  constructor() {
+    this.currentView = 'home'; // Default to Home view with top categories & trending cards
+    this.currentCategory = 'trending';
+    
+    this._initToast();
+    this._initDomReferences();
+    this._initComponents();
+    this._initHomeCategories();
+    this._bindNavigation();
+    this._checkUrlParameters();
+  }
+
+  _initToast() {
+    this.toastContainer = document.getElementById('toast-container');
+    this.toastTimer = null;
+  }
+
+  showToast(message, icon = '🌿') {
+    if (!this.toastContainer) return;
+    
+    this.toastContainer.innerHTML = '';
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <span class="toast-icon">${icon}</span>
+      <span>${message}</span>
+    `;
+
+    this.toastContainer.appendChild(toast);
+    
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  _initDomReferences() {
+    this.homeView = document.getElementById('view-home');
+    this.reelsView = document.getElementById('view-reels');
+    this.saveView = document.getElementById('view-save');
+
+    this.navBtnHome = document.getElementById('nav-item-home');
+    this.navBtnReels = document.getElementById('nav-item-reels');
+    this.navBtnSave = document.getElementById('nav-item-save');
+
+    this.btnHamburger = document.getElementById('btn-hamburger');
+    this.btnHomeHamburger = document.getElementById('btn-home-hamburger');
+    this.btnHomeSound = document.getElementById('btn-home-sound');
+  }
+
+  _initComponents() {
+    // 1. Modals (Language, Feedback, Rate, Privacy)
+    this.modals = new ModalsManager((msg, icon) => this.showToast(msg, icon));
+
+    // 2. Glassmorphism Side Drawer
+    const drawerBackdrop = document.getElementById('drawer-backdrop');
+    this.sideDrawer = new SideDrawer(drawerBackdrop, {
+      onOpenLanguage: () => this.modals.openLanguage(),
+      onOpenFeedback: () => this.modals.openFeedback(),
+      onOpenRate: () => this.modals.openRate(),
+      onOpenPrivacy: () => this.modals.openPrivacy()
+    });
+
+    if (this.btnHamburger) {
+      this.btnHamburger.addEventListener('click', () => this.sideDrawer.open());
+    }
+    if (this.btnHomeHamburger) {
+      this.btnHomeHamburger.addEventListener('click', () => this.sideDrawer.open());
+    }
+
+    // Sound toggle on Home header
+    if (this.btnHomeSound) {
+      this.btnHomeSound.addEventListener('click', () => {
+        const isAudioActive = soundEngine.toggleSound(this.currentCategory || 'forest');
+        if (isAudioActive) {
+          this.btnHomeSound.classList.add('active');
+          this.showToast(`🔊 Nature Soundscape Active: ${this.currentCategory.toUpperCase()}`, '🌿');
+        } else {
+          this.btnHomeSound.classList.remove('active');
+          this.showToast('🔇 Nature Soundscape Muted', 'ℹ️');
+        }
+      });
+    }
+
+    // 3. Dedicated Video Player Overlay (Plays full video with sound on card click)
+    const playerOverlay = document.getElementById('video-player-overlay');
+    this.player = new VideoPlayer(playerOverlay, (msg, icon) => this.showToast(msg, icon));
+
+    // 4. Home View Reels Grid Component (Click card -> Play video in full-screen player!)
+    const homeGridContainer = document.getElementById('home-reels-grid-container');
+    if (homeGridContainer) {
+      this.homeGrid = new ReelsGrid(homeGridContainer, (reel) => {
+        // When card is clicked on Home -> Open & Play Video in Player!
+        this.player.open(reel);
+      });
+      this.homeGrid.setReels(getReelsByCategory('trending'), 'trending');
+    }
+
+    // 5. Full-Screen 9:16 Instagram Reels Feed (Reel Tab with snap scroll & play/pause)
+    const reelsFeedContainer = document.getElementById('reels-feed-container');
+    this.reelsFeed = new ReelsFeed(reelsFeedContainer, (msg, icon) => this.showToast(msg, icon));
+
+    // Link category change to update Home grid as well
+    this.reelsFeed.onCategoryChange = (categoryId) => {
+      this.currentCategory = categoryId;
+      if (this.homeGrid) {
+        const reels = getReelsByCategory(categoryId);
+        this.homeGrid.setReels(reels, categoryId);
+      }
+      // Update home chips highlight
+      const chips = document.querySelectorAll('.home-cat-chip');
+      chips.forEach(c => {
+        if (c.getAttribute('data-id') === categoryId) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+    };
+
+    // 6. Save Screen (Saved, Liked & Downloaded tabs)
+    const saveScreenContainer = document.getElementById('save-screen-container');
+    this.saveScreen = new SaveScreen(saveScreenContainer, (reel, opts) => {
+      this.player.open(reel, opts);
+    }, (msg, icon) => this.showToast(msg, icon));
+
+    // 7. Dynamic live sync listener from Admin Panel
+    window.addEventListener('reelsUpdated', () => {
+      this._initHomeCategories();
+      if (this.homeGrid) {
+        const reels = getReelsByCategory(this.currentCategory);
+        this.homeGrid.setReels(reels, this.currentCategory);
+      }
+      this.showToast('✨ Live App Synced: Content Updated', '🌿');
+    });
+
+    // Run initial localization
+    i18n.updateDom();
+  }
+
+  _initHomeCategories() {
+    const scroller = document.getElementById('home-category-scroller');
+    if (!scroller) return;
+
+    scroller.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const chip = document.createElement('button');
+      chip.className = `home-cat-chip ${cat.id === this.currentCategory ? 'active' : ''}`;
+      chip.setAttribute('data-id', cat.id);
+      chip.setAttribute('id', `home-cat-${cat.id}`);
+      chip.setAttribute('type', 'button');
+      chip.setAttribute('aria-label', `Category ${cat.name}`);
+      chip.innerHTML = `
+        <img src="${cat.image_url}" alt="${cat.name}" loading="lazy" />
+        <span>${cat.name}</span>
+      `;
+
+      chip.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.selectCategory(cat.id);
+      });
+
+      scroller.appendChild(chip);
+    });
+  }
+
+  selectCategory(categoryId) {
+    this.currentCategory = categoryId;
+
+    // Update active class on home chips
+    const chips = document.querySelectorAll('.home-cat-chip');
+    chips.forEach(c => {
+      if (c.getAttribute('data-id') === categoryId) {
+        c.classList.add('active');
+        c.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        c.classList.remove('active');
+      }
+    });
+
+    // Update Home grid
+    if (this.homeGrid) {
+      const reels = getReelsByCategory(categoryId);
+      this.homeGrid.setReels(reels, categoryId);
+    }
+
+    // Sync reels feed category as well
+    if (this.reelsFeed && this.reelsFeed.activeCategory !== categoryId) {
+      this.reelsFeed.filterCategory(categoryId);
+    }
+  }
+
+  _bindNavigation() {
+    if (this.navBtnHome) {
+      this.navBtnHome.addEventListener('click', () => this.switchView('home'));
+    }
+    if (this.navBtnReels) {
+      this.navBtnReels.addEventListener('click', () => this.switchView('reels'));
+    }
+    if (this.navBtnSave) {
+      this.navBtnSave.addEventListener('click', () => this.switchView('save'));
+    }
+
+    window.addEventListener('popstate', () => {
+      if (this.player && this.player.overlay.classList.contains('active')) {
+        this.player.close();
+      } else if (this.sideDrawer && this.sideDrawer.isOpen) {
+        this.sideDrawer.close();
+      } else if (this.currentView === 'save') {
+        this.switchView('home');
+      }
+    });
+
+    // Android back button bridge
+    window.showExitConfirm = () => {
+      if (this.player && this.player.overlay.classList.contains('active')) {
+        this.player.close();
+        return;
+      }
+      if (this.sideDrawer && this.sideDrawer.isOpen) {
+        this.sideDrawer.close();
+        return;
+      }
+      if (this.currentView === 'save') {
+        this.switchView('home');
+        return;
+      }
+      if (window.AndroidBridge && typeof window.AndroidBridge.exitApp === 'function') {
+        window.AndroidBridge.exitApp();
+      }
+    };
+  }
+
+  switchView(viewName) {
+    this.currentView = viewName;
+
+    const bottomNav = document.getElementById('bottom-nav-bar');
+
+    // Reset bottom nav active classes
+    [this.navBtnHome, this.navBtnReels, this.navBtnSave].forEach(btn => {
+      if (btn) {
+        btn.classList.remove('active');
+        btn.style.color = '';
+      }
+    });
+
+    const floatingHeader = document.getElementById('reels-floating-header');
+
+    if (viewName === 'home') {
+      if (bottomNav) {
+        bottomNav.classList.remove('bottom-nav-dark');
+        bottomNav.classList.add('bottom-nav-light');
+      }
+      if (this.navBtnHome) {
+        this.navBtnHome.classList.add('active');
+      }
+      if (this.homeView) this.homeView.style.display = 'block';
+      if (this.reelsView) this.reelsView.style.display = 'none';
+      if (this.saveView) this.saveView.style.display = 'none';
+      if (floatingHeader) floatingHeader.style.display = 'none';
+      if (this.reelsFeed) this.reelsFeed.pauseAll();
+    } else if (viewName === 'reels') {
+      if (bottomNav) {
+        bottomNav.classList.remove('bottom-nav-light');
+        bottomNav.classList.add('bottom-nav-dark');
+      }
+      if (this.navBtnReels) {
+        this.navBtnReels.classList.add('active');
+      }
+      if (this.homeView) this.homeView.style.display = 'none';
+      if (this.reelsView) this.reelsView.style.display = 'block';
+      if (this.saveView) this.saveView.style.display = 'none';
+      if (floatingHeader) floatingHeader.style.display = 'block';
+      if (this.reelsFeed) {
+        this.reelsFeed.resumeActive();
+      }
+    } else if (viewName === 'save') {
+      if (bottomNav) {
+        bottomNav.classList.remove('bottom-nav-dark');
+        bottomNav.classList.add('bottom-nav-light');
+      }
+      if (this.navBtnSave) {
+        this.navBtnSave.classList.add('active');
+      }
+      if (this.homeView) this.homeView.style.display = 'none';
+      if (this.reelsView) this.reelsView.style.display = 'none';
+      if (this.saveView) this.saveView.style.display = 'block';
+      if (floatingHeader) floatingHeader.style.display = 'none';
+      if (this.reelsFeed) this.reelsFeed.pauseAll();
+      this.saveScreen.render();
+    }
+  }
+
+  _checkUrlParameters() {
+    const params = new URLSearchParams(window.location.search);
+    const reelId = params.get('reel');
+    if (reelId) {
+      const targetReel = getReelById(reelId);
+      if (targetReel) {
+        setTimeout(() => this.player.open(targetReel), 300);
+      }
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.app = new NatureMomentsApp();
+});

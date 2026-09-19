@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nature Moments — Peaceful Nature Reels</title>
+  <meta name="description" content="Watch 100+ peaceful nature reels in 9:16 full-screen Instagram Reels format. Mountain streams, waterfalls, forests with authentic ambient sound." />
+  <meta name="theme-color" content="#17483C" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Caveat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/design-tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/player.css" />
+  <link rel="stylesheet" href="css/reels-feed.css" />
+  <link rel="stylesheet" href="css/home-screen.css" />
+</head>
+<body>
+
+  <!-- App Stage Frame (Responsive 9:16 Container) -->
+  <div class="reels-app-stage">
+
+    <!-- 1. FLOATING GLASS HEADER OVER REELS (Visible when on Reels tab) -->
+    <header id="reels-floating-header" class="reels-floating-header" style="display: none;">
+      <div class="header-top-row">
+        <!-- Hamburger Menu -->
+        <button id="btn-hamburger" class="btn-circle" style="width: 38px; height: 38px; background: rgba(23, 72, 60, 0.7); color: #FFF; border: 1px solid rgba(255,255,255,0.25);" aria-label="Open Navigation Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="17" x2="16" y2="17"></line>
+          </svg>
+        </button>
+
+        <!-- Brand Identity Pill -->
+        <div class="header-brand-pill" onclick="window.app && window.app.switchView('reels')">
+          <img class="header-brand-logo" src="assets/logo.svg" alt="Logo" />
+          <span class="header-brand-name" data-i18n="app_title">Nature Moments</span>
+        </div>
+
+        <!-- Working Sound / Voice Toggle with Equalizer -->
+        <button id="reels-sound-toggle-btn" class="header-sound-btn" title="Toggle Nature Audio">
+          <div id="reels-sound-eq" class="sound-equalizer">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+          <span id="reels-sound-label">Audio</span>
+        </button>
+      </div>
+
+      <!-- Floating Horizontal Category Pills -->
+      <nav id="reels-category-scroller" class="reels-category-scroller" aria-label="Filter Reels by Category">
+        <!-- Populated dynamically with 20 categories -->
+      </nav>
+    </header>
+
+
+    <!-- 2. HOME VIEW (PRIMARY LANDING SCREEN MATCHING REFERENCE DESIGN) -->
+    <section id="view-home" class="view-screen" style="display: block;">
+      <!-- Sticky Top Header matching screenshot -->
+      <header class="home-header-top">
+        <div class="home-header-row">
+          <!-- Circular Green Hamburger Menu -->
+          <button id="btn-home-hamburger" class="home-hamburger-btn" aria-label="Open Navigation Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="12" x2="16" y2="12"></line>
+              <line x1="4" y1="17" x2="18" y2="17"></line>
+            </svg>
+          </button>
+
+          <!-- Cursive Nature Moments Title -->
+          <h1 class="home-app-title">Nature Moments</h1>
+
+          <!-- Nature Sound Equalizer Button -->
+          <div class="home-header-right">
+            <button id="btn-home-sound" class="home-sound-btn" title="Toggle Nature Audio" aria-label="Toggle Nature Audio">
+              <span class="home-sound-eq">
+                <span class="home-eq-bar"></span>
+                <span class="home-eq-bar"></span>
+                <span class="home-eq-bar"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Horizontal Category Pills with Photo Avatars -->
+        <nav id="home-category-scroller" class="home-category-bar" aria-label="Filter Categories">
+          <!-- Populated dynamically with category avatar chips -->
+        </nav>
+      </header>
+
+      <!-- 2-Column Vertical Reel Cards Grid -->
+      <div id="home-reels-grid-container" class="home-reels-grid">
+        <!-- Populated dynamically by ReelsGrid component -->
+      </div>
+    </section>
+
+    <!-- 3. REELS VIEW: 9:16 VERTICAL INSTAGRAM REELS FEED (REEL TAB) -->
+    <main id="view-reels" class="view-screen" style="display: none; height: 100%; width: 100%;">
+      <div id="reels-feed-container" class="reels-feed-container">
+        <!-- 9:16 Vertical Snap Reels populated dynamically with 60FPS lazy video streaming -->
+      </div>
+    </main>
+
+
+    <!-- 4. SAVE VIEW: SAVE & OFFLINE DOWNLOADS -->
+    <section id="view-save" class="view-screen" style="display: none; height: 100%; overflow-y: auto; padding-top: 24px; padding-bottom: 84px; background: #FAF7F2;">
+      <div id="save-screen-container">
+        <!-- Populated with Saved and Downloaded tabs -->
+      </div>
+    </section>
+
+
+    <!-- 5. BOTTOM NAVIGATION BAR (HOME, REELS, SAVE) -->
+    <nav id="bottom-nav-bar" class="bottom-nav bottom-nav-light" aria-label="Bottom Navigation">
+      <div class="bottom-nav-inner">
+        <!-- Tab 1: Home (Default) -->
+        <button id="nav-item-home" class="bottom-nav-item active" type="button" aria-label="Home">
+          <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.5a2 2 0 0 0-1.32.5L3.4 9.17A2 2 0 0 0 2.67 10.7V19a2 2 0 0 0 2 2h14.66a2 2 0 0 0 2-2v-8.3a2 2 0 0 0-.73-1.53l-7.28-6.17A2 2 0 0 0 12 2.5zm-2 13.5h4a1 1 0 0 1 1 1v1.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5V17a1 1 0 0 1 1-1z" />
+          </svg>
+          <span class="bottom-nav-label">Home</span>
+        </button>
+
+        <!-- Tab 2: Reels -->
+        <button id="nav-item-reels" class="bottom-nav-item" type="button" aria-label="Reels">
+          <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" ry="5.5"></rect>
+            <path d="M2.5 8h19"></path>
+            <path d="M7 2.5L9.5 8"></path>
+            <path d="M14.5 2.5L17 8"></path>
+            <polygon points="10 11.5 15.5 15 10 18.5" fill="currentColor" stroke="none"></polygon>
+          </svg>
+          <span class="bottom-nav-label">Reels</span>
+        </button>
+
+        <!-- Tab 3: Save -->
+        <button id="nav-item-save" class="bottom-nav-item" type="button" aria-label="Save">
+          <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21l-5-3.5L7 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16z"></path>
+            <path d="M19 7v12.5l-2-1.4" opacity="0.6" stroke-width="1.8"></path>
+            <path d="M19 5a2 2 0 0 0-2-2" opacity="0.6" stroke-width="1.8"></path>
+          </svg>
+          <span class="bottom-nav-label" data-i18n="nav_save">Save</span>
+        </button>
+      </div>
+    </nav>
+
+  </div><!-- /.reels-app-stage -->
+
+
+  <!-- 6. DEDICATED REEL VIDEO PLAYER OVERLAY (FOR EXPLORE/SAVE DIRECT LAUNCH) -->
+  <div id="video-player-overlay" class="player-overlay" role="dialog" aria-modal="true">
+    <div class="player-stage">
+      
+      <!-- Video Element -->
+      <video class="player-video" loop playsinline></video>
+
+      <!-- Spinner -->
+      <div class="player-spinner"></div>
+
+      <!-- Center Play Indicator -->
+      <div class="player-center-play">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="6 3 20 12 6 21 6 3"></polygon>
+        </svg>
+      </div>
+
+      <!-- Top Bar -->
+      <div class="player-top-bar">
+        <button class="player-back-btn" id="player-btn-back" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        <div class="player-top-details">
+          <div class="player-title">Nature Reel</div>
+          <span class="player-category-tag">Nature</span>
+        </div>
+
+        <div class="player-top-right">
+          <button class="player-icon-btn" id="player-btn-fullscreen" title="Fullscreen" style="width: 38px; height: 38px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Action Panel -->
+      <div class="player-actions-side">
+        <!-- Like -->
+        <div class="action-btn-item">
+          <button id="player-btn-like" class="action-btn" title="Like">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+          <span class="action-btn-label" data-i18n="action_like">Like</span>
+        </div>
+
+        <!-- WhatsApp Share -->
+        <div class="action-btn-item">
+          <button id="player-btn-share" class="action-btn" title="Share via WhatsApp">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <span class="action-btn-label">Share</span>
+        </div>
+
+        <!-- Download -->
+        <div class="action-btn-item">
+          <button id="player-btn-download" class="action-btn" title="Download">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
+          <span class="action-btn-label" data-i18n="action_download">Save</span>
+        </div>
+
+        <!-- Save -->
+        <div class="action-btn-item">
+          <button id="player-btn-save" class="action-btn" title="Save">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+          <span class="action-btn-label" data-i18n="action_save">Save</span>
+        </div>
+
+        <!-- Sound Toggle -->
+        <div class="action-btn-item">
+          <button id="player-btn-mute" class="action-btn" title="Mute/Unmute">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Scrubber & Times -->
+      <div class="player-bottom-bar">
+        <div class="player-scrubber-wrap">
+          <div class="player-scrubber-track">
+            <div class="player-scrubber-progress"></div>
+            <div class="player-scrubber-handle"></div>
+          </div>
+        </div>
+        <div class="player-time-row">
+          <span id="player-current-time" class="player-time-text">0:00</span>
+          <span id="player-duration-time" class="player-time-text">0:00</span>
+        </div>
+      </div>
+
+      <!-- Download Progress Overlay Dialog -->
+      <div class="download-progress-overlay">
+        <div class="download-progress-card">
+          <div class="download-progress-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <h4 class="download-progress-title" data-i18n="download_started">Downloading Nature Reel</h4>
+          <div class="download-progress-bar-wrap">
+            <div class="download-progress-bar"></div>
+          </div>
+          <div class="download-progress-percent">0%</div>
+          <button class="download-cancel-btn" data-i18n="action_cancel">Cancel</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- 7. GLASSMORPHISM SIDE NAVIGATION DRAWER -->
+  <div id="drawer-backdrop" class="drawer-backdrop">
+    <div class="drawer-panel">
+      
+      <div class="drawer-header">
+        <div class="drawer-branding">
+          <img class="drawer-logo" src="assets/logo.svg" alt="Nature Moments Logo" />
+          <div>
+            <div class="drawer-title-main" data-i18n="app_title">Nature Moments</div>
+            <div class="drawer-title-sub" data-i18n="app_tagline">PEACEFUL REELS</div>
+          </div>
+        </div>
+        <button id="drawer-btn-close" class="btn-circle" style="width: 36px; height: 36px;" aria-label="Close Drawer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-nav">
+        <!-- 1. Language -->
+        <button id="drawer-item-language" class="drawer-item" type="button">
+          <span class="drawer-item-icon">🌐</span>
+          <span id="drawer-label-language" data-i18n="drawer_language">Language</span>
+        </button>
+
+        <!-- 2. Feedback -->
+        <button id="drawer-item-feedback" class="drawer-item" type="button">
+          <span class="drawer-item-icon">💬</span>
+          <span id="drawer-label-feedback" data-i18n="drawer_feedback">Feedback</span>
+        </button>
+
+        <!-- 3. Rate App -->
+        <button id="drawer-item-rate" class="drawer-item" type="button">
+          <span class="drawer-item-icon">⭐</span>
+          <span id="drawer-label-rate" data-i18n="drawer_rate">Rate App</span>
+        </button>
+
+        <!-- 4. Share App -->
+        <button id="drawer-item-share" class="drawer-item" type="button">
+          <span class="drawer-item-icon">🔗</span>
+          <span id="drawer-label-share" data-i18n="drawer_share">Share App</span>
+        </button>
+
+        <!-- 5. Privacy Policy -->
+        <button id="drawer-item-privacy" class="drawer-item" type="button">
+          <span class="drawer-item-icon">🛡️</span>
+          <span id="drawer-label-privacy" data-i18n="drawer_privacy">Privacy Policy</span>
+        </button>
+
+        <!-- 6. Admin Studio -->
+        <a id="drawer-item-admin" class="drawer-item" href="admin.html" target="_blank" style="text-decoration: none; color: inherit;">
+          <span class="drawer-item-icon">🛠️</span>
+          <span>Admin Studio</span>
+        </a>
+      </div>
+
+      <div class="drawer-footer">
+        <div>Nature Moments v1.2.0 • Reels Edition</div>
+        <div style="font-size: 0.7rem; opacity: 0.7; margin-top: 4px;">100% Free & Private • Live Content Sync</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- 8. MODALS -->
+  <!-- Modal 1: Language Selection -->
+  <div id="modal-language" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <button id="lang-btn-back" class="btn-circle" style="width: 36px; height: 36px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h3 class="modal-title" data-i18n="select_language_title">Select Language</h3>
+        <button id="lang-btn-done" style="padding: 6px 16px; border-radius: var(--radius-full); border: none; background: var(--color-dark-green); color: #fff; font-weight: 700; cursor: pointer;" data-i18n="action_done">Done</button>
+      </div>
+      <div class="modal-body">
+        <div id="lang-options-list">
+          <!-- Populated with 7 languages -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Feedback -->
+  <div id="modal-feedback" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="feedback_title">Send Feedback</h3>
+        <button id="feedback-btn-close" class="btn-circle" style="width: 36px; height: 36px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.86rem; color: var(--color-text-muted); margin-bottom: 14px;">
+          We value your peaceful experience. No personal data or email is required.
+        </p>
+        
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--color-dark-green);" data-i18n="feedback_rating_label">Your Rating</label>
+          <div style="display: flex; gap: 8px; margin-top: 6px; font-size: 1.6rem; cursor: pointer;">
+            <span class="feedback-star" data-value="1" style="color: var(--color-gold); fill: var(--color-gold);">★</span>
+            <span class="feedback-star" data-value="2" style="color: var(--color-gold); fill: var(--color-gold);">★</span>
+            <span class="feedback-star" data-value="3" style="color: var(--color-gold); fill: var(--color-gold);">★</span>
+            <span class="feedback-star" data-value="4" style="color: var(--color-gold); fill: var(--color-gold);">★</span>
+            <span class="feedback-star" data-value="5" style="color: var(--color-gold); fill: var(--color-gold);">★</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <textarea id="feedback-textarea" rows="4" style="width: 100%; border: 1.5px solid var(--color-light-gray); border-radius: var(--radius-md); padding: 12px; font-family: inherit; font-size: 0.9rem; outline: none;" placeholder="Share your suggestions, reel requests, or thoughts..." data-i18n-placeholder="feedback_placeholder"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="feedback-btn-submit" style="padding: 10px 22px; border-radius: var(--radius-full); border: none; background: var(--color-dark-green); color: #fff; font-weight: 700; cursor: pointer;" data-i18n="action_submit">Submit Feedback</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Rate App -->
+  <div id="modal-rate" class="modal-overlay">
+    <div class="modal-card" style="text-align: center;">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="rate_title">Rate Nature Moments</h3>
+        <button id="rate-btn-close" class="btn-circle" style="width: 36px; height: 36px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+        <div style="font-size: 3rem; color: var(--color-gold);">⭐⭐⭐⭐⭐</div>
+        <p style="font-size: 0.92rem; color: var(--color-text-dark);" data-i18n="rate_sub">
+          If you enjoy watching peaceful nature reels and waterfalls, please take a moment to rate our app!
+        </p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button id="rate-btn-playstore" style="padding: 12px 28px; border-radius: var(--radius-full); border: none; background: var(--color-dark-green); color: #fff; font-weight: 700; cursor: pointer; display: flex; align-items: gap: 8px;" data-i18n="rate_button">
+          <span>⭐ Rate on Play Store</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Privacy Policy -->
+  <div id="modal-privacy" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="privacy_title">Privacy Policy</h3>
+        <button id="privacy-btn-close" class="btn-circle" style="width: 36px; height: 36px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="font-size: 0.88rem; line-height: 1.6; color: var(--color-text-dark);">
+        <p style="margin-bottom: 12px;">
+          <strong>Zero Personal Data Collection:</strong> Nature Moments does not require or collect phone numbers, email addresses, names, contacts, or location data.
+        </p>
+        <p style="margin-bottom: 12px;">
+          <strong>Client-Side Storage:</strong> All likes, saved bookmarks, and downloaded video files are stored locally on your device using your browser's private localStorage and IndexedDB storage.
+        </p>
+        <p style="margin-bottom: 12px;">
+          <strong>No Account Needed:</strong> You are free to discover, watch, and enjoy peaceful nature moments without creating an account.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="privacy-btn-ok" style="padding: 10px 24px; border-radius: var(--radius-full); border: none; background: var(--color-dark-green); color: #fff; font-weight: 700; cursor: pointer;">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main App Controller (Universal Bundle) -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>

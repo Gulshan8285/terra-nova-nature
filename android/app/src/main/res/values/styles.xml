@@ -1,0 +1,15 @@
+<resources>
+    <style name="Theme.NatureMoments" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorPrimaryDark">@color/dark_green</item>
+        <item name="colorAccent">@color/soft_yellow</item>
+        <item name="android:windowBackground">@color/cream_bg</item>
+    </style>
+
+    <style name="Theme.NatureMoments.Fullscreen" parent="Theme.NatureMoments">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>
